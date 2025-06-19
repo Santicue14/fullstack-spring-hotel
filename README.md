@@ -22,11 +22,8 @@ Sistema completo de gestión de hotel desarrollado con **Spring Boot** (Backend)
 - **CSS Modules**
 
 ---
-
+## Estructura de la Base de Datos
 ![Diagrama Entidad-Relación](DER.jpeg)
-
-Estructura de la Base de Datos
-- reservas
 
 ### Explicación de las Relaciones
 
