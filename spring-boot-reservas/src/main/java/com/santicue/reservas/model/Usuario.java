@@ -65,6 +65,17 @@ public class Usuario {
     public Rol getRol() { return rol; }
     public void setRol(Rol rol) { this.rol = rol; }
 
+    public Integer getId_rol() { 
+        return rol != null ? rol.getId_rol() : null; 
+    }
+    
+    public void setId_rol(Integer id_rol) { 
+        if (this.rol == null) {
+            this.rol = new Rol();
+        }
+        this.rol.setId_rol(id_rol); 
+    }
+
     @Override
     public String toString() {
         return "Usuario{" +

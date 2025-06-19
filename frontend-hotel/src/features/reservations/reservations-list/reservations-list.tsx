@@ -21,7 +21,6 @@ export const ReservationsList = () => {
         setIsFetchingReservas(true);
         fetchReservas()
         .then((reservas) => {
-            console.log(reservas);
             setIsFetchingReservas(false);
             setReservas(reservas);
         })
@@ -124,11 +123,14 @@ export const ReservationsList = () => {
                                             {reserva.estado}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button className="text-indigo-600 hover:text-indigo-900 mr-3">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2 cursor-pointer">
+                                        <button className="text-indigo-600 hover:text-indigo-900 mr-3" onClick={() => {
+                                            setIsFormOpen(true);
+                                            setSelectedReserva(reserva);
+                                        }}>
                                             Editar
                                         </button>
-                                        <button className="text-red-600 hover:text-red-900">
+                                        <button className="text-red-600 hover:text-red-900" onClick={() => setIsDeleteDialogOpen(true)}>
                                             Eliminar
                                         </button>
                                     </td>
@@ -139,7 +141,12 @@ export const ReservationsList = () => {
                 </table>
             </div>
         </div>
-        {isFormOpen && <ReservationsForm handleClose={handleCloseForm} />}
+            {isFormOpen && <ReservationsForm handleClose={handleCloseForm} reserva={selectedReserva || undefined} 
+            onSuccess={() => {
+                setIsFormOpen(false);
+                setSelectedReserva(null);
+            }}
+        />}
         </>
     )
 }

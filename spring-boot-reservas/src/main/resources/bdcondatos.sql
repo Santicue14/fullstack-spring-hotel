@@ -1,20 +1,6 @@
 -- Script de inicialización de datos para Reservas Hotel
 -- Este archivo se ejecuta automáticamente al iniciar la aplicación
 
--- Limpiar tablas existentes (en orden inverso por las foreign keys)
-DELETE FROM reservas;
-DELETE FROM usuarios;
-DELETE FROM roles;
-DELETE FROM habitaciones;
-DELETE FROM clientes;
-
--- Resetear auto-increment
-ALTER TABLE reservas AUTO_INCREMENT = 1;
-ALTER TABLE usuarios AUTO_INCREMENT = 1;
-ALTER TABLE roles AUTO_INCREMENT = 1;
-ALTER TABLE habitaciones AUTO_INCREMENT = 1;
-ALTER TABLE clientes AUTO_INCREMENT = 1;
-
 -- Insertar roles
 INSERT INTO roles (descripcion, created_at, updated_at) VALUES 
 ('Administrador', NULL, NULL),

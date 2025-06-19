@@ -4,22 +4,45 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useEffect, useState } from "react";
 import type { Habitacion } from "../../../models/Habitacion";
 import type { Cliente } from "../../../models/Cliente";
+import type { Reserva } from "../../../models/Reserva";
+import type { Usuario } from "../../../models/Usuario";
 
-export const ReservationsForm = ({ handleClose }: { handleClose: () => void }) => {
-    const {fetchClientes, createReserva, fetchHabitaciones} = useHotel();
+interface ReservationsFormProps {
+    reserva?: Reserva;
+    handleClose: () => void;
+    onSuccess?: () => void;
+}
+
+export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose, reserva, onSuccess }) => {
+    const {fetchClientes, createReserva, fetchHabitaciones, updateReserva} = useHotel();
     const { user } = useAuth();
     const [clientes, setClientes] = useState<Cliente[]>([]);
     const [habitaciones, setHabitaciones] = useState<Habitacion[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loadingClientes, setLoadingClientes] = useState<boolean>(false);
     const [loadingHabitaciones, setLoadingHabitaciones] = useState<boolean>(false);
+    const [formData, setFormData] = useState<Reserva>({
+        fecha_inicio: reserva?.fecha_inicio || '',
+        fecha_fin: reserva?.fecha_fin || '',
+        habitacion: reserva?.habitacion || null as unknown as Habitacion,
+        cliente: reserva?.cliente || null as unknown as Cliente,
+        usuario: reserva?.usuario || null as unknown as Usuario,
+        dias: reserva?.dias || 0,
+        total: reserva?.total || 0,
+        estado: reserva?.estado || 'PENDIENTE',
+        fecha_reserva: reserva?.fecha_reserva || ''
+        });
+
+    const [isEditing, setIsEditing] = useState<boolean>(false);
 
     useEffect(() => {
+        if(isEditing) {
+            setFormData(reserva as Reserva);
+        }
         setLoadingClientes(true);
         fetchClientes()
         .then((clientes) => {
             setClientes(clientes);
-            console.log(clientes);
         })
         .catch((error) => {
             setError(error.message);
@@ -30,11 +53,13 @@ export const ReservationsForm = ({ handleClose }: { handleClose: () => void }) =
     }, []);
 
     useEffect(() => {
+        if(isEditing) {
+            setFormData(reserva as Reserva);
+        }
         setLoadingHabitaciones(true);
         fetchHabitaciones()
         .then((habitaciones) => {
             setHabitaciones(habitaciones);
-            console.log(habitaciones);
         })
         .catch((error) => {
             setError(error.message);
@@ -78,19 +103,8 @@ export const ReservationsForm = ({ handleClose }: { handleClose: () => void }) =
         const fechaFinISO = new Date(fechaFin + 'T00:00:00').toISOString();
         const fechaReservaISO = new Date().toISOString();
         
-        console.log({ 
-            fecha_inicio: fechaInicioISO, 
-            fecha_fin: fechaFinISO, 
-            habitacion: habitacion, 
-            cliente: cliente, 
-            usuario: user, 
-            dias: dias, 
-            total: total, 
-            estado: 'PENDIENTE', 
-            fecha_reserva: fechaReservaISO
-        });
-        
-        createReserva({ 
+        if(isEditing) {
+            updateReserva(reserva?.id_reserva as number, { 
             fecha_inicio: fechaInicioISO, 
             fecha_fin: fechaFinISO, 
             habitacion: habitacion, 
@@ -103,12 +117,32 @@ export const ReservationsForm = ({ handleClose }: { handleClose: () => void }) =
         })
         .then(() => {
                 handleClose();
+                location.reload();
             })
             .catch((error) => {
                 setError(error.message);
             });
+        } else {
+            createReserva({ 
+                fecha_inicio: fechaInicioISO, 
+                fecha_fin: fechaFinISO, 
+                habitacion: habitacion, 
+                cliente: cliente, 
+                usuario: user, 
+                dias: dias, 
+                total: total, 
+                estado: 'PENDIENTE', 
+                fecha_reserva: fechaReservaISO
+            })
+            .then(() => {
+                handleClose();
+                location.reload();
+            })
+            .catch((error) => {
+                setError(error.message);
+            });
+        }
     }
-
     return createPortal(
         <>
         <div className="fixed inset-0 bg-gray-500 opacity-30 flex justify-center items-center" onClick={handleClose}></div>
@@ -126,20 +160,21 @@ export const ReservationsForm = ({ handleClose }: { handleClose: () => void }) =
                         {clientes.map((cliente) => (
                             <option 
                             key={cliente.id_cliente}
-                            value={cliente.id_cliente}>
+                            value={cliente.id_cliente}
+                            selected={formData.cliente?.id_cliente === cliente.id_cliente}>
                                 {`${cliente.dni} - ${cliente.nombre} ${cliente.apellido}`}
                             </option>
                         ))}
                     </select>
                     <label htmlFor="fecha_inicio">Fecha de inicio</label>
-                    <input type="date" id="fecha_inicio" name="fecha_inicio" className="border border-gray-300 rounded-md p-2" required />
+                    <input type="date" id="fecha_inicio" name="fecha_inicio" className="border border-gray-300 rounded-md p-2" required value={formData.fecha_inicio.split('T')[0]} onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })} />
                     <label htmlFor="fecha_fin">Fecha de fin</label>
-                    <input type="date" id="fecha_fin" name="fecha_fin" className="border border-gray-300 rounded-md p-2" required />
+                    <input type="date" id="fecha_fin" name="fecha_fin" className="border border-gray-300 rounded-md p-2" required value={formData.fecha_fin.split('T')[0]} onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })} />
                     <label htmlFor="habitacion">Habitación</label>
                     <select id="habitacion" name="habitacion" className="border border-gray-300 rounded-md p-2" required disabled={loadingHabitaciones}>
                         <option value="">Selecciona una habitación</option>
                         {habitaciones.map((habitacion) => (
-                            <option key={habitacion.id_habitacion} value={habitacion.id_habitacion}>{habitacion.numero} - {habitacion.tipo} - ${habitacion.precio_noche}</option>
+                            <option key={habitacion.id_habitacion} value={habitacion.id_habitacion} selected={formData.habitacion?.id_habitacion === habitacion.id_habitacion}      >{habitacion.numero} - {habitacion.tipo} - ${habitacion.precio_noche}</option>
                         ))}
                     </select>
                     <button type="submit" className="bg-blue-500 text-white p-2 rounded-md mt-4" disabled={loadingClientes || loadingHabitaciones}>

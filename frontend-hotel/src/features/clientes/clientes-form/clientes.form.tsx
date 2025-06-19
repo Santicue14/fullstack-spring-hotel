@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { useHotel } from '../../../contexts/HotelContext';
 import type { Cliente } from '../../../models/Cliente';
 import { createPortal } from 'react-dom';
@@ -12,21 +13,28 @@ interface ClienteFormProps {
 export const ClientesForm: React.FC<ClienteFormProps> = ({ handleClose, cliente, onSuccess }) => {
   const { createCliente, updateCliente } = useHotel();
   const isEditing = !!cliente;
+  console.log(cliente);
+  const [formData, setFormData] = useState<Cliente>({
+    dni: cliente?.dni || '',
+    nombre: cliente?.nombre || '',
+    apellido: cliente?.apellido || '',
+    email: cliente?.email || '',
+    telefono: cliente?.telefono || ''
+  });
 
+  useEffect(() => {
+    if (cliente) {
+      setFormData(cliente);
+    }
+  }, [cliente, isEditing]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const dni = formData.get('dni') as string;
-    const nombre = formData.get('nombre') as string;
-    const apellido = formData.get('apellido') as string;
-    const email = formData.get('email') as string;
-    const telefono = formData.get('telefono') as string;
     try {
       if (isEditing) {
-        await updateCliente(Number(cliente?.id_cliente), {dni, nombre, apellido, email, telefono});
+            await updateCliente(Number(cliente?.id_cliente), formData as Cliente);
       } else {
-        await createCliente({dni, nombre, apellido, email, telefono});
+        await createCliente(formData);
       }
       onSuccess?.();
       location.reload();
@@ -66,6 +74,8 @@ export const ClientesForm: React.FC<ClienteFormProps> = ({ handleClose, cliente,
               id="dni"
               required
               placeholder="Ingrese el DNI"
+              value={formData.dni}
+              onChange={(e) => setFormData({ ...formData, dni: e.target.value })}
             />
           </div>
 
@@ -80,6 +90,8 @@ export const ClientesForm: React.FC<ClienteFormProps> = ({ handleClose, cliente,
               id="nombre"
               required
               placeholder="Ingrese el nombre"
+              value={formData.nombre}
+              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
             />
           </div>
 
@@ -94,6 +106,8 @@ export const ClientesForm: React.FC<ClienteFormProps> = ({ handleClose, cliente,
               id="apellido"
               required
               placeholder="Ingrese el apellido"
+              value={formData.apellido}
+              onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
             />
           </div>
 
@@ -107,6 +121,8 @@ export const ClientesForm: React.FC<ClienteFormProps> = ({ handleClose, cliente,
               name="email"
               id="email"
               placeholder="Ingrese el email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
           </div>
 
@@ -120,6 +136,8 @@ export const ClientesForm: React.FC<ClienteFormProps> = ({ handleClose, cliente,
               name="telefono"
               id="telefono"   
               placeholder="Ingrese el teléfono"
+              value={formData.telefono}
+              onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
             />
           </div>
 

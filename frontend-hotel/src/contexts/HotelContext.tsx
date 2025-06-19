@@ -3,6 +3,8 @@ import axios from 'axios';
 import type { Cliente } from '../models/Cliente';
 import type { Habitacion } from '../models/Habitacion';
 import type { Reserva } from '../models/Reserva';
+import type { Usuario } from '../models/Usuario';
+import type { Rol } from '../models/Rol';
 import { API_URL } from '../hooks/Api';
 
 interface HotelContextType {
@@ -25,6 +27,15 @@ interface HotelContextType {
   createReserva: (reserva: Reserva) => Promise<Reserva>;
   updateReserva: (id: number, reserva: Reserva) => Promise<Reserva>;
   deleteReserva: (id: number) => Promise<void>;
+
+  // Usuario functions
+  fetchUsuarios: () => Promise<Usuario[]>;
+  createUsuario: (usuario: Usuario) => Promise<Usuario>;
+  updateUsuario: (id: number, usuario: Usuario) => Promise<Usuario>;
+  deleteUsuario: (id: number) => Promise<void>;
+  
+  // Rol functions
+  fetchRoles: () => Promise<Rol[]>;
 }
 
 const HotelContext = createContext<HotelContextType | undefined>(undefined);
@@ -175,6 +186,57 @@ export const HotelProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   };
 
+  // Usuario functions
+
+  const fetchUsuarios = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/usuarios`);
+      return response.data;
+    } catch (err: any) {
+      console.error('Error fetching usuarios:', err);
+      throw err;
+    }
+  };
+
+  const createUsuario = async (usuario: Usuario) => {
+    try {
+      const response = await axios.post(`${API_URL}/usuarios`, usuario);
+      return response.data;
+    } catch (err: any) {
+      console.error('Error creating usuario:', err);
+      throw err;
+    }
+  };  
+  const updateUsuario = async (id: number, usuario: Usuario) => {
+    try {
+      const response = await axios.put(`${API_URL}/usuarios/${id}`, usuario);
+      return response.data;
+    } catch (err: any) {
+      console.error('Error updating usuario:', err);
+      throw err;
+    }
+  };
+
+  const deleteUsuario = async (id: number) => {
+    try {
+      await axios.delete(`${API_URL}/usuarios/${id}`);
+    } catch (err: any) {
+      console.error('Error deleting usuario:', err);
+      throw err;
+    }
+  };
+
+  // Rol functions
+  const fetchRoles = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/roles`);
+      return response.data;
+    } catch (err: any) {
+      console.error('Error fetching roles:', err);
+      throw err;
+    }
+  };
+
   return (
     <HotelContext.Provider value={{
       // Cliente functions
@@ -195,7 +257,16 @@ export const HotelProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       getReservaById,
       createReserva,
       updateReserva,
-      deleteReserva
+      deleteReserva,
+
+      // Usuario functions
+      fetchUsuarios,
+      createUsuario,
+      updateUsuario,
+      deleteUsuario,
+
+      // Rol functions
+      fetchRoles
     }}>
       {children}
     </HotelContext.Provider>

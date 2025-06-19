@@ -2,7 +2,6 @@ package com.santicue.reservas.model;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.sql.Timestamp;
 
 @Entity

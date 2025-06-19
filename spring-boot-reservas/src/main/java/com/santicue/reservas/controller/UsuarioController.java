@@ -3,6 +3,7 @@ package com.santicue.reservas.controller;
 import com.santicue.reservas.model.Usuario;
 import com.santicue.reservas.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,8 +27,13 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public List<Usuario> getAllUsuarios() {
-        return usuarioService.findAll();
+    public ResponseEntity<List<Usuario>> getAllUsuarios() {
+        try {
+            List<Usuario> usuarios = usuarioService.findAll();
+            return ResponseEntity.ok(usuarios);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/login")
@@ -44,39 +50,51 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Integer id) {
-        Optional<Usuario> usuario = usuarioService.findById(id);
-        return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            Optional<Usuario> usuario = usuarioService.findById(id);
+            return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<?> createUsuario(@RequestBody Usuario usuario) {
         try {
-            return ResponseEntity.ok(usuarioService.save(usuario));
+            Usuario savedUsuario = usuarioService.createUsuario(usuario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedUsuario);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear el usuario: " + e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Integer id, @RequestBody Usuario usuarioDetails) {
-        Optional<Usuario> optionalUsuario = usuarioService.findById(id);
-        if (optionalUsuario.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> updateUsuario(@PathVariable Integer id, @RequestBody Usuario usuarioDetails) {
+        try {
+            Usuario updatedUsuario = usuarioService.updateUsuario(id, usuarioDetails);
+            return ResponseEntity.ok(updatedUsuario);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar el usuario: " + e.getMessage());
         }
-        Usuario usuario = optionalUsuario.get();
-        usuario.setNombre(usuarioDetails.getNombre());
-        usuario.setEmail(usuarioDetails.getEmail());
-        usuario.setContrasena(usuarioDetails.getContrasena());
-        usuario.setRol(usuarioDetails.getRol());
-        return ResponseEntity.ok(usuarioService.save(usuario));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
-        if (usuarioService.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> deleteUsuario(@PathVariable Integer id) {
+        try {
+            if (usuarioService.findById(id).isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            usuarioService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el usuario: " + e.getMessage());
         }
-        usuarioService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 } 
