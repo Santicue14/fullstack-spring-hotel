@@ -33,7 +33,7 @@ export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose,
         fecha_reserva: reserva?.fecha_reserva || ''
         });
 
-    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [isEditing, setIsEditing] = useState<boolean>(reserva ? true : false);
 
     useEffect(() => {
         if(isEditing) {
@@ -76,7 +76,7 @@ export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose,
         const fechaInicio = formData.get('fecha_inicio') as string;
         const fechaFin = formData.get('fecha_fin') as string;
         const habitacionId = formData.get('habitacion') as string;
-        
+        const estado = formData.get('estado') as string;
         const cliente = clientes.find((cliente) => cliente.id_cliente === Number(clienteId));
         const habitacion = habitaciones.find((habitacion) => habitacion.id_habitacion === Number(habitacionId));
 
@@ -112,7 +112,7 @@ export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose,
             usuario: user, 
             dias: dias, 
             total: total, 
-            estado: 'PENDIENTE', 
+            estado: estado, 
             fecha_reserva: fechaReservaISO
         })
         .then(() => {
@@ -131,7 +131,7 @@ export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose,
                 usuario: user, 
                 dias: dias, 
                 total: total, 
-                estado: 'PENDIENTE', 
+                estado: estado, 
                 fecha_reserva: fechaReservaISO
             })
             .then(() => {
@@ -153,35 +153,55 @@ export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose,
                         {error}
                     </div>
                 )}
-                <form className="flex flex-col gap-2 mt-4" onSubmit={handleSubmit}>
-                    <label htmlFor="cliente">Cliente</label>
+                <form className="grid grid-cols-2 gap-2 mt-4" onSubmit={handleSubmit}>
+                    <label htmlFor="cliente" className="flex flex-col gap-2">
+                        Cliente
                     <select id="cliente" name="cliente" className="border border-gray-300 rounded-md p-2" required disabled={loadingClientes}>
                         <option value="">Selecciona un cliente</option>
                         {clientes.map((cliente) => (
                             <option 
                             key={cliente.id_cliente}
                             value={cliente.id_cliente}
-                            selected={formData.cliente?.id_cliente === cliente.id_cliente}>
+                            defaultValue={formData.cliente?.id_cliente}
+                            >
                                 {`${cliente.dni} - ${cliente.nombre} ${cliente.apellido}`}
                             </option>
                         ))}
                     </select>
-                    <label htmlFor="fecha_inicio">Fecha de inicio</label>
-                    <input type="date" id="fecha_inicio" name="fecha_inicio" className="border border-gray-300 rounded-md p-2" required value={formData.fecha_inicio.split('T')[0]} onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })} />
-                    <label htmlFor="fecha_fin">Fecha de fin</label>
-                    <input type="date" id="fecha_fin" name="fecha_fin" className="border border-gray-300 rounded-md p-2" required value={formData.fecha_fin.split('T')[0]} onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })} />
-                    <label htmlFor="habitacion">Habitación</label>
+                    </label>
+                    <label htmlFor="habitacion" className="flex flex-col gap-2">
+                        Habitación
                     <select id="habitacion" name="habitacion" className="border border-gray-300 rounded-md p-2" required disabled={loadingHabitaciones}>
                         <option value="">Selecciona una habitación</option>
                         {habitaciones.map((habitacion) => (
                             <option key={habitacion.id_habitacion} value={habitacion.id_habitacion} selected={formData.habitacion?.id_habitacion === habitacion.id_habitacion}      >{habitacion.numero} - {habitacion.tipo} - ${habitacion.precio_noche}</option>
                         ))}
                     </select>
-                    <button type="submit" className="bg-blue-500 text-white p-2 rounded-md mt-4" disabled={loadingClientes || loadingHabitaciones}>
+                    </label>
+                    <label htmlFor="fecha_inicio" className="flex flex-col gap-2">
+                        Fecha de inicio
+                        <input type="date" id="fecha_inicio" name="fecha_inicio" className="border border-gray-300 rounded-md p-2" required value={formData.fecha_inicio.split('T')[0]} onChange={(e) => setFormData({ ...formData, fecha_inicio: e.target.value })} />
+                    </label>
+                    <label htmlFor="fecha_fin" className="flex flex-col gap-2">
+                        Fecha de fin
+                        <input type="date" id="fecha_fin" name="fecha_fin" className="border border-gray-300 rounded-md p-2" required value={formData.fecha_fin.split('T')[0]} onChange={(e) => setFormData({ ...formData, fecha_fin: e.target.value })} />
+                    </label>
+                        <label htmlFor="estado" className="flex flex-col gap-2 col-span-2">
+                        Estado
+                        <select id="estado" name="estado" className="border border-gray-300 rounded-md p-2" required>
+                            <option value="PENDIENTE">PENDIENTE</option>
+                            <option value="CONFIRMADA">CONFIRMADA</option>
+                            <option value="CANCELADA">CANCELADA</option>
+                        </select>
+                    </label>
+                    <div className="actions col-span-2 w-full flex justify-center gap-2">
+                <button className="bg-gray-500 text-white p-2 rounded-md mt-2" onClick={handleClose}>Cancelar</button>
+
+                    <button type="submit" className="bg-blue-500 text-white p-2 rounded-md mt-2" disabled={loadingClientes || loadingHabitaciones}>
                         {isEditing ? 'Actualizar reserva' : 'Crear reserva'}
                     </button>
+                    </div>
                 </form>
-                <button className="bg-gray-500 text-white p-2 rounded-md mt-2" onClick={handleClose}>Cancelar</button>
             </div>
         </>,
         document.getElementById('root') as HTMLElement
