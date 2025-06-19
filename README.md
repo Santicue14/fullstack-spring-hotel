@@ -241,30 +241,8 @@ El frontend estará disponible en: `http://localhost:5173`
 - **REST API**: Para comunicación cliente-servidor
 - **Context API**: Para estado global en React
 
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
-
 ## 👨‍💻 Autor
 
 **Santiago Cuevas**
 - GitHub: [@santicue](https://github.com/santicue)
-
----
-
-## 🆘 Soporte
-
-Si tienes alguna pregunta o problema, por favor:
-1. Revisa la documentación
-2. Busca en los issues existentes
-3. Crea un nuevo issue con detalles del problema
-
-**¡Gracias por usar nuestro sistema de gestión de hotel! 🏨✨** 
+- Linkedin: [@santiagocuevas147](https://www.linkedin.com/in/santiagocuevas147/)
