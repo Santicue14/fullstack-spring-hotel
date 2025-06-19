@@ -147,7 +147,7 @@ export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose,
         <>
         <div className="fixed inset-0 bg-gray-500 opacity-30 flex justify-center items-center" onClick={handleClose}></div>
             <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg" onClick={(e) => e.stopPropagation()}>
-                <h1 className="text-2xl font-bold">Crear Reserva</h1>
+                <h1 className="text-2xl font-bold">{isEditing ? 'Actualizar Reserva' : 'Crear Reserva'}</h1>
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                         {error}
@@ -178,7 +178,7 @@ export const ReservationsForm: React.FC<ReservationsFormProps> = ({ handleClose,
                         ))}
                     </select>
                     <button type="submit" className="bg-blue-500 text-white p-2 rounded-md mt-4" disabled={loadingClientes || loadingHabitaciones}>
-                        {loadingClientes || loadingHabitaciones ? 'Cargando...' : 'Crear reserva'}
+                        {isEditing ? 'Actualizar reserva' : 'Crear reserva'}
                     </button>
                 </form>
                 <button className="bg-gray-500 text-white p-2 rounded-md mt-2" onClick={handleClose}>Cancelar</button>
