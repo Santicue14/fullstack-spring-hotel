@@ -3,6 +3,7 @@ package com.santicue.reservas.controller;
 import com.santicue.reservas.model.Reserva;
 import com.santicue.reservas.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +27,15 @@ public class ReservaController {
         return reserva.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Reserva createReserva(@RequestBody Reserva reserva) {
-        return reservaService.save(reserva);
+    @PostMapping(consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Reserva> createReserva(@RequestBody Reserva reserva) {
+        try {
+            Reserva savedReserva = reservaService.save(reserva);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedReserva);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
     }
 
     @PutMapping("/{id}")

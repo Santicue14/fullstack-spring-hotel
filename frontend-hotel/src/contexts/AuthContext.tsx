@@ -1,10 +1,17 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useContext } from "react";
 import type { Usuario } from "../models/Usuario";
 import { API_URL } from "../hooks/Api";
 import axios from "axios";
 import type { AxiosError } from "axios";
 
-const AuthContext = createContext({});
+interface AuthContextType {
+    user: Usuario | null;
+    setUser: (user: Usuario | null) => void;
+    login: (email: string, contrasena: string) => Promise<void>;
+    logout: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
@@ -47,4 +54,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>;
 }
 
-export { AuthContext, AuthProvider };
+const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+};
+
+export { AuthContext, AuthProvider, useAuth };

@@ -1,12 +1,14 @@
 import type { Cliente } from "./Cliente";
 import type { Habitacion } from "./Habitacion";
+import type { Usuario } from "./Usuario";
 
 export interface Reserva {
     id_reserva?: number;
     cliente: Cliente;
     habitacion: Habitacion;
-    fecha_entrada: string;
-    fecha_salida: string;
+    usuario: Usuario;
+    fecha_inicio: string;
+    fecha_fin: string;
     dias: number;
     total: number;
     estado: string; // CONFIRMADA, CANCELADA, COMPLETADA

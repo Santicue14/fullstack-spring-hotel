@@ -1,9 +1,12 @@
 export interface Usuario {
-    id: string;
+    id_usuario?: number;
     nombre: string;
     email: string;
-    rol: {
+    contrasena?: string;
+    rol?: {
         id_rol: number;
         descripcion: string;
-    }
+    };
+    created_at?: string;
+    updated_at?: string;
 }

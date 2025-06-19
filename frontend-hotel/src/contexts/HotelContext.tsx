@@ -144,7 +144,11 @@ export const HotelProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const createReserva = async (reserva: Reserva) => {
     try {
-      const response = await axios.post(`${API_URL}/reservas`, reserva);
+      const response = await axios.post(`${API_URL}/reservas`, reserva, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       return response.data;
     } catch (err: any) {
       console.error('Error creating reserva:', err);
