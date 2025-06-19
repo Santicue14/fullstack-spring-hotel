@@ -36,12 +36,6 @@ public class HabitacionService {
             throw new IllegalArgumentException("El precio por noche debe ser mayor a 0");
         }
 
-        // Verificar si ya existe una habitación con el mismo número
-        Optional<Habitacion> existingHabitacion = habitacionRepository.findByNumero(habitacion.getNumero());
-        if (existingHabitacion.isPresent()) {
-            throw new IllegalArgumentException("Ya existe una habitación con el número: " + habitacion.getNumero());
-        }
-
         return habitacionRepository.save(habitacion);
     }
 
@@ -64,12 +58,6 @@ public class HabitacionService {
         }
         if (habitacionDetails.getPrecio_noche() == null || habitacionDetails.getPrecio_noche() <= 0) {
             throw new IllegalArgumentException("El precio por noche debe ser mayor a 0");
-        }
-
-        // Verificar si ya existe otra habitación con el mismo número
-        Optional<Habitacion> existingHabitacion = habitacionRepository.findByNumero(habitacionDetails.getNumero());
-        if (existingHabitacion.isPresent() && !existingHabitacion.get().getId_habitacion().equals(id)) {
-            throw new IllegalArgumentException("Ya existe otra habitación con el número: " + habitacionDetails.getNumero());
         }
 
         Habitacion habitacion = optionalHabitacion.get();

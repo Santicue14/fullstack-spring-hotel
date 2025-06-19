@@ -5,6 +5,7 @@ import { ClientesList } from "./features/clientes/clientes-list/clientes.list"
 import { ReservationsList } from "./features/reservations/reservations-list/reservations-list"
 import { HabitacionesList } from "./features/habitaciones/habitaciones-list"
 import { UsersList } from "./features/users/users-list"
+import {DashboardPage} from "./features/dashboard/dashboard-page"
 
 function App() {
 
@@ -14,7 +15,7 @@ function App() {
     <BrowserRouter> 
       <Routes>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/" element={<PrivateRoute><h1 className="text-3xl font-bold underline">Gestor de Reservas para Hotel</h1></PrivateRoute>} />
+        <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
         <Route path="/clientes" element={<PrivateRoute><ClientesList /></PrivateRoute>} />
         <Route path="/reservas" element={<PrivateRoute><ReservationsList /></PrivateRoute>} />
         <Route path="/habitaciones" element={<PrivateRoute><HabitacionesList /></PrivateRoute>} />
