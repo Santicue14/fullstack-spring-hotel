@@ -12,13 +12,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reservas")
+@CrossOrigin(origins = "*")
 public class ReservaController {
     @Autowired
     private ReservaService reservaService;
 
     @GetMapping
-    public List<Reserva> getAllReservas() {
-        return reservaService.findAll();
+    public ResponseEntity<List<Reserva>> getAllReservas() {
+        List<Reserva> reservas = reservaService.findAll();
+        return ResponseEntity.ok(reservas);
     }
 
     @GetMapping("/{id}")
@@ -28,38 +30,43 @@ public class ReservaController {
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Reserva> createReserva(@RequestBody Reserva reserva) {
+    public ResponseEntity<?> createReserva(@RequestBody Reserva reserva) {
         try {
             Reserva savedReserva = reservaService.save(reserva);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedReserva);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear la reserva: " + e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Reserva> updateReserva(@PathVariable Integer id, @RequestBody Reserva reservaDetails) {
-        Optional<Reserva> optionalReserva = reservaService.findById(id);
-        if (optionalReserva.isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> updateReserva(@PathVariable Integer id, @RequestBody Reserva reservaDetails) {
+        try {
+            Reserva updatedReserva = reservaService.update(id, reservaDetails);
+            return ResponseEntity.ok(updatedReserva);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al actualizar la reserva: " + e.getMessage());
         }
-        Reserva reserva = optionalReserva.get();
-        reserva.setCliente(reservaDetails.getCliente());
-        reserva.setHabitacion(reservaDetails.getHabitacion());
-        reserva.setDias(reservaDetails.getDias());
-        reserva.setTotal(reservaDetails.getTotal());
-        reserva.setFecha_reserva(reservaDetails.getFecha_reserva());
-        reserva.setUsuario(reservaDetails.getUsuario());
-        return ResponseEntity.ok(reservaService.save(reserva));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReserva(@PathVariable Integer id) {
-        if (reservaService.findById(id).isEmpty()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> deleteReserva(@PathVariable Integer id) {
+        try {
+            boolean deleted = reservaService.deleteById(id);
+            if (deleted) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar la reserva: " + e.getMessage());
         }
-        reservaService.deleteById(id);
-        return ResponseEntity.noContent().build();
     }
 } 

@@ -14,11 +14,13 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        // Allow all origins
+        // Permitir todos los orígenes
         config.addAllowedOrigin("*");
-        // Allow all HTTP methods
+        
+        // Permitir todos los métodos HTTP (GET, POST, PUT, DELETE, etc.)
         config.addAllowedMethod("*");
-        // Allow all headers
+
+        // Permitir todos los encabezados
         config.addAllowedHeader("*");
         
         source.registerCorsConfiguration("/**", config);

@@ -28,12 +28,8 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
-        try {
-            List<Usuario> usuarios = usuarioService.findAll();
-            return ResponseEntity.ok(usuarios);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<Usuario> usuarios = usuarioService.findAll();
+        return ResponseEntity.ok(usuarios);
     }
 
     @PostMapping("/login")
@@ -50,12 +46,8 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Integer id) {
-        try {
-            Optional<Usuario> usuario = usuarioService.findById(id);
-            return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Optional<Usuario> usuario = usuarioService.findById(id);
+        return usuario.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
